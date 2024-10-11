@@ -1,0 +1,43 @@
+{% extends 'auctions/layout.html' %}
+
+{% block body %}
+    <h1>List an Item</h1>
+
+    {% if message %}
+        <div style="color:red">{{ message }}</div>
+    {% endif %}
+
+    <form action="{% url 'create' %}" method="post">
+        {% csrf_token %}
+        <div>
+            <input type="text" placeholder="Title" name="title">
+        </div>
+        <div>
+            <textarea name="description" style="resize:none; height:100px; width:600px" placeholder="Description"></textarea>
+        </div>
+        <div>
+            <input type="number" placeholder="Starting Bid" name="bid">
+        </div>
+        <div>
+            <input type="url" placeholder="Image URL" name="image">
+        </div>
+        <div>
+            <select name="category">
+                <option>Category</option>
+                <option value="digital services">digital services</option>
+                <option value="cosmetics and body care">cosmetics and body care</option>
+                <option value="food and beverage">food and beverage</option>
+                <option value="furniture and decor">furniture and decor</option>
+                <option value="health and wellness">health and wellness</option>
+                <option value="household items">household items</option>
+                <option value="media">media</option>
+                <option value="pet care">pet care</option>
+                <option value="office equipment">office equipment</option>
+                <option value="tools">tools</option>
+            </select>
+        </div>
+        <div>
+            <input type="submit" value="Put for Sale">
+        </div>
+    </form>
+{% endblock %}

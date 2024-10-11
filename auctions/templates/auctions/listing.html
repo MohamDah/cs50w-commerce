@@ -1,0 +1,105 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+
+    <div class="listing-page">
+        <div>
+            {% if user.username == listing.seller and won == False %}
+            <form action="{% url 'close' %}" method="post">
+                {% csrf_token %}
+                <input type="hidden" value="{{ listing.pk }}" name="pk">
+                <input class="btn btn-secondary" type="submit" value="Close Auction">
+            </form>
+            {% endif %}
+            <h2>{{ listing.title }}</h2>
+            {% if listing.image %}
+                <img src="{{ listing.image }}" alt="{{ listing.title }}" width="200">
+            {% endif %}
+            <p>-Seller: {{ listing.seller }}</p>
+            <p style="font-size: 30px">-{{ listing.description }}</p>
+            {% if listing.category %}
+            <p style="font-weight:bold">-{{ listing.category }}</p>
+            {% else %}
+            <p style="font-weight:bold">-Category unspecified</p>
+            {% endif %}
+            <p>-starting bid: {{ listing.bid }}$</p>
+        </div>
+
+
+            {% if user.is_authenticated %}
+                {% if listing not in watchlist %}
+                <form action="{% url 'watchlist' %}" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" value="{{ listing.pk }}" name="pk">
+                    <input class="btn btn-secondary" type="submit" value="Add to watchlist">
+                </form>
+                {% else %}
+                <form action="{% url 'remove' %}" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" value="{{ listing.pk }}" name="pk">
+                    <input class="btn btn-secondary" type="submit" value="Remove from watchlist">
+                </form>
+                {% endif %}
+            {% endif %}
+
+            {% if won == False %}
+            <hr>
+            {% if user.is_authenticated %}
+            <div style="margin: 10px">
+                {% if message %}
+                <span style="color:red">{{ message }}</span>
+                {% endif %}
+                <form action="{% url 'bid' %}" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" value="{{ listing.pk }}" name="pk">
+                    <input type="number" name="bid" placeholder="bid">
+                    <input class="btn btn-secondary" type="submit" value="Place a bid">
+                </form>
+            </div>
+            {% endif %}
+            {% endif %}
+
+            <div>
+                <strong>Placed bids</strong>
+                <ul>
+                    {% for bid in placed_bids %}
+                    <li>{{ bid.bid }}$ by {{ bid.bidder }}</li>
+                    {% empty %}
+                    <li>No Bids Placed</li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+        {% if won == True %}
+            {% if user.username == win.bidder.username %}
+                <center style="font-size:40px"><strong>You Have Won This Auction</strong></center>
+            {% else %}
+                <center style="font-size:40px"><strong>Auction is closed</strong></center>
+            {% endif %}
+        {% endif %}
+
+        <hr>
+
+        <h2>Comments</h2>
+        {% if user.is_authenticated %}
+        <div style="margin: 10px">
+            <form action="{% url 'comments' %}" method="post">
+                {% csrf_token %}
+                <input type="hidden" value="{{ listing.pk }}" name="pk">
+                <label class="toolow" for="comment">Leave Comment: </label>
+                <textarea id="comment" name="comment" style="resize:none; height:70px; width:600px"></textarea>
+                <input class="toolow btn btn-secondary" type="submit" value="Post Comment">
+            </form>
+        </div>
+        {% endif %}
+
+        <ul>
+            {% for comment in comments %}
+            {% if comment.commented == listing %}
+                <li style="margin-top:20px"><strong>{{ comment.commenter.username }}:</strong> "{{ comment.comment }}"</li>
+            {% endif %}
+            {% endfor %}
+        </ul>
+    </div>
+
+{% endblock %}

@@ -1,0 +1,24 @@
+{% extends 'auctions/layout.html' %}
+
+{% block body %}
+    <ul>
+        {% for listing in listings %}
+        {% if listing not in closed %}
+            <li>
+                <div style="border-style: dotted; border-width: 1px; padding: 10px; margin: 5px">
+                    {% if listing.image %}
+                        <a href="{% url 'listing' listing.pk %}"><img src="{{ listing.image }}" alt="{{ listing.title }}" width="200"></a>
+                    {% endif %}
+                    <div style="position:relative;">
+                        <p><a href="{% url 'listing' listing.pk %}"><span style="font-weight:bold">
+                        <p>{{ listing.title }}</span></a></p>
+                        <p>{{ listing.description}}</p>
+                        <p>Starting Bid: {{ listing.bid }}$</p>
+                    </div>
+
+                </div>
+            </li>
+        {% endif %}
+        {% endfor %}
+    </ul>
+{% endblock %}
